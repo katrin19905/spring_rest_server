@@ -3,6 +3,7 @@ package taranova.spring_rest.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import taranova.spring_rest.entity.Employee;
+import taranova.spring_rest.exception_handling.EmployeeIsAlreadyInDBException;
 import taranova.spring_rest.exception_handling.NoSuchEmployeeException;
 import taranova.spring_rest.services.EmployeeService;
 
@@ -38,7 +39,7 @@ public class MyRESTController {
 
     @PutMapping("/employees")
     public Employee updateEmployee(@RequestBody Employee employee) {
-        employee = checkEmployeeInDatabaseForViewOrUpdateOrDelete(employee.getId());
+       checkEmployeeInDatabaseForViewOrUpdateOrDelete(employee.getId());
         employeeService.saveOrUpdateEntity(employee);
         return employee;
     }
@@ -63,7 +64,7 @@ public class MyRESTController {
     private void checkEmployeeNotInDBForAddNewEmployee(Employee employee) {
         int employeeId = employee.getId();
         if (employeeService.findEntityById(employeeId) != null) {
-            throw new NoSuchEmployeeException("There is employee with id "
+            throw new EmployeeIsAlreadyInDBException("There is employee with id "
                     + employeeId + " in DataBase");
         }
     }
